@@ -62,8 +62,8 @@ public:
     right_height = subtree_height(root_node->right_child);
     if (root_node->parent.lock() == nullptr)
     {
-      cout << "left subtree: " << left_height << " | right subtree: " << right_height << endl;
-      cout << "left_is_avl: " << left_is_avl << " | right_is_avl: " << right_is_avl << endl;
+      if (DBG) { cout << "left subtree: " << left_height << " | right subtree: " << right_height << endl; }
+      if (DBG) { cout << "left_is_avl: " << left_is_avl << " | right_is_avl: " << right_is_avl << endl; }
     }
     return left_is_avl && right_is_avl && (abs(left_height - right_height) <= 1u);
   }
@@ -77,8 +77,8 @@ public:
   static bool valid_balance_factors(const shared_ptr<typename avltree<K, V>::node> node)
   {
     if (!node) return true;
-    cout << "left_height: " << subtree_height(node->left_child) << " | right_height: "
-         << subtree_height(node->right_child) << " | balance_factor: " << static_cast<int>(node->balance_factor) << endl;
+    if (DBG) { cout << "left_height: " << subtree_height(node->left_child) << " | right_height: "
+         << subtree_height(node->right_child) << " | balance_factor: " << static_cast<int>(node->balance_factor) << endl; }
     return (subtree_height(node->left_child) - subtree_height(node->right_child) == node->balance_factor)
             && valid_balance_factors(node->left_child) && valid_balance_factors(node->right_child);
   }
