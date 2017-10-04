@@ -26,6 +26,8 @@ using std::weak_ptr;
 using std::cout;
 using std::endl;
 
+#define DBG false
+
 template<typename K, typename V>
 class test_helper;
 
@@ -187,7 +189,7 @@ void avltree<K, V>::remove(const K& key)
     // removed node has 2 children?
     if (target->left_child && target->right_child)
     {
-      cout << "removing node with 2 children... " << endl;
+      if (DBG) { cout << "removing node with 2 children... " << endl; }
       // find in-order successor (node with smallest key that is > than this key)
       shared_ptr<node> successor = target->right_child;
       shared_ptr<node> successor_parent;
@@ -198,7 +200,7 @@ void avltree<K, V>::remove(const K& key)
       // successor has a right child? (if it had left-child, it wouldn't be in-order successor!)
       if (successor->right_child)
       {
-        cout << "In order successor has a right child, reseating this to successor node." << endl;
+        if (DBG) { cout << "In order successor has a right child, reseating this to successor node." << endl; }
         // We need to reseat this child where "successor" lived.
         if (successor->is_left_child())
           set_left_child(successor_parent, successor->right_child);
@@ -207,7 +209,7 @@ void avltree<K, V>::remove(const K& key)
       }
       else  // Successor had no children, can just be removed.
       {
-        cout << "successor had no children, removing it." << endl;
+        if (DBG) { cout << "successor had no children, removing it." << endl; }
         if (successor->is_left_child())
           successor_parent->left_child = nullptr;
         else // successor is a right child
@@ -228,7 +230,7 @@ void avltree<K, V>::remove(const K& key)
     // removed node has 1 child?
     else
     {
-      cout << "node had one child, moving that orphan to position of removed node..." << endl;
+      if (DBG) { cout << "node had one child, moving that orphan to position of removed node..." << endl; }
       // get pointer to the node that would be orphaned
       shared_ptr<node> orphan = (target->left_child) ? target->left_child : target->right_child;
       // If the root is being deleted, this orphan must become the new root
@@ -246,10 +248,10 @@ void avltree<K, V>::remove(const K& key)
   // Removed node had 0 children?
   else
   {
-    cout << "node had no children, removing and retracing from parent." << endl;
+    if (DBG) { cout << "node had no children, removing and retracing from parent." << endl; }
     if (target == root)  // parent == null in this case
     {
-      cout << "node was root, tree is now empty" << endl;
+      if (DBG) { cout << "node was root, tree is now empty" << endl; }
       root = nullptr;     // we remove the root, leaving an empty tree, no balancing required
     }
     else if (target->is_left_child())
@@ -295,21 +297,21 @@ void avltree<K, V>::_retrace_insertion(shared_ptr<node> inserted_node)
 {
   shared_ptr<node> current;
   shared_ptr<node> parent;
-  cout << "\n---------------- Retracing insertion ----------------" << endl;
+  if (DBG) { cout << "\n---------------- Retracing insertion ----------------" << endl; }
   for (current = inserted_node; current->parent.lock() != nullptr ; current = parent)
   {
-    cout << "backtracing:" << endl;
+    if (DBG) { cout << "backtracing:" << endl; }
     parent = current->parent.lock();
     if (current->is_left_child())
     {
-      cout << "Child is left child" << endl;
+      if (DBG) { cout << "Child is left child" << endl; }
       if (parent->balance_factor == LEFT_HEAVY)
       {
         //tree is unbalanced, left too heavy
-        cout << "Parent is already LEFT_HEAVY, rebalance required." << endl;
+        if (DBG) { cout << "Parent is already LEFT_HEAVY, rebalance required." << endl; }
         if (current->balance_factor == RIGHT_HEAVY)
         {
-          cout << "Found RIGHT_HEAVY subsubtree in LEFT_HEAVY subtree, performing right-left rotation." << endl;
+          if (DBG) { cout << "Found RIGHT_HEAVY subsubtree in LEFT_HEAVY subtree, performing right-left rotation." << endl; }
           // left child in right subtree -> right-left double rotation
           _left_right_rotate(parent);
           return;
@@ -317,18 +319,18 @@ void avltree<K, V>::_retrace_insertion(shared_ptr<node> inserted_node)
         else // (parent->is_right_child() || parent == root) necessarily.
         {
           // left child in left subtree -> single right rotation
-          cout << "Found LEFT_HEAVY subsubtree in LEFT_HEAVY subtree, performing right rotation." << endl;
+          if (DBG) { cout << "Found LEFT_HEAVY subsubtree in LEFT_HEAVY subtree, performing right rotation." << endl; }
           _right_rotate(parent);
           return;
         }
       }
       else
       {
-        cout << "Adding LEFT_HEAVY to parent balance factor." << endl;
+        if (DBG) { cout << "Adding LEFT_HEAVY to parent balance factor." << endl; }
         parent->balance_factor += LEFT_HEAVY;
         if (parent->balance_factor == BALANCED)
         {
-          cout << "Tree is now AVL, returning!" << endl;
+          if (DBG) { cout << "Tree is now AVL, returning!" << endl; }
           return;
         }
         else
@@ -337,33 +339,33 @@ void avltree<K, V>::_retrace_insertion(shared_ptr<node> inserted_node)
     }
     else // (current->is_right_child()) necessarily, we exited loop if there was no parent, so it can't be root.
     {
-      cout << "Child is right child" << endl;
+      if (DBG) { cout << "Child is right child" << endl; }
       if (parent->balance_factor == RIGHT_HEAVY)
       {
-        cout << "parent is RIGHT_HEAVY" << endl; 
+        if (DBG) { cout << "parent is RIGHT_HEAVY" << endl;  }
         //tree is unbalanced, right too heavy
         if (current->balance_factor == LEFT_HEAVY)
         {
           // right child in left subtree -> left-right double rotation
-          cout << "Found LEFT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing right-left rotation." << endl;
+          if (DBG) { cout << "Found LEFT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing right-left rotation." << endl; }
           _right_left_rotate(parent);
           return;
         }
         else // (parent->is_right_child() || parent == root) necessarily.
         {
           // right child in right subtree -> single left rotation
-          cout << "Found RIGHT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing left rotation." << endl;
+          if (DBG) { cout << "Found RIGHT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing left rotation." << endl; }
           _left_rotate(parent);
           return;
         }
       }
       else
       {
-        cout << "Adding RIGHT_HEAVY to parent balance factor." << endl;
+        if (DBG) { cout << "Adding RIGHT_HEAVY to parent balance factor." << endl; }
         parent->balance_factor += RIGHT_HEAVY;
         if (parent->balance_factor == BALANCED)
         {
-          cout << "Tree is now AVL, returning!" << endl;
+          if (DBG) { cout << "Tree is now AVL, returning!" << endl; }
           return;
         }
         else
@@ -371,7 +373,7 @@ void avltree<K, V>::_retrace_insertion(shared_ptr<node> inserted_node)
       }
     }
   }
-  cout << "Fell through, we made it to root? " << (current == root) << endl;
+  if (DBG) { cout << "Fell through, we made it to root? " << (current == root) << endl; }
 }
 
 template <typename K, typename V>
@@ -380,27 +382,27 @@ void avltree<K, V>::_retrace_deletion(shared_ptr<node> subtree_root, int8_t bala
   shared_ptr<node> current = subtree_root;
   shared_ptr<node> parent;
 
-  cout << "\n---------------- Retracing deletion ----------------" << endl;
+  if (DBG) { cout << "\n---------------- Retracing deletion ----------------" << endl; }
   if (current->balance_factor == BALANCED)
   {
-    cout << "Subtree was balanced, no illegal subtree height change." << endl;
+    if (DBG) { cout << "Subtree was balanced, no illegal subtree height change." << endl; }
     current->balance_factor += balance_factor_change;
     return;
   }
 
   else if ((current->balance_factor + balance_factor_change) != BALANCED)
   {
-    cout << "Subtree is imbalanced here, need to rotate." << endl;
+    if (DBG) { cout << "Subtree is imbalanced here, need to rotate." << endl; }
     if (balance_factor_change == LEFT_HEAVY)
     {
       if (subtree_root->left_child->balance_factor == LEFT_HEAVY)
       {
-        cout << "Found LEFT_HEAVY subsubtree in LEFT_HEAVY subtree, performing right rotation." << endl;
+        if (DBG) { cout << "Found LEFT_HEAVY subsubtree in LEFT_HEAVY subtree, performing right rotation." << endl; }
         _right_rotate(subtree_root);
       }
       else
       {
-        cout << "Found RIGHT_HEAVY subsubtree in LEFT_HEAVY subtree, performing left-right rotation." << endl;
+        if (DBG) { cout << "Found RIGHT_HEAVY subsubtree in LEFT_HEAVY subtree, performing left-right rotation." << endl; }
         _left_right_rotate(subtree_root);
       }
     }
@@ -408,12 +410,12 @@ void avltree<K, V>::_retrace_deletion(shared_ptr<node> subtree_root, int8_t bala
     {
       if (subtree_root->right_child->balance_factor == RIGHT_HEAVY)
       {
-          cout << "Found RIGHT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing left rotation." << endl;
+          if (DBG) { cout << "Found RIGHT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing left rotation." << endl; }
         _left_rotate(subtree_root);
       }
       else
       {
-        cout << "Found LEFT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing right-left rotation." << endl;
+        if (DBG) { cout << "Found LEFT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing right-left rotation." << endl; }
         _right_left_rotate(subtree_root);
       }
     }
@@ -421,40 +423,40 @@ void avltree<K, V>::_retrace_deletion(shared_ptr<node> subtree_root, int8_t bala
   }
   else
   {
-    cout << "Subtree is balanced, but height has reduced by one, need to retrace..." << endl;
+    if (DBG) { cout << "Subtree is balanced, but height has reduced by one, need to retrace..." << endl; }
   }
 
   for (current = subtree_root; current->parent.lock() != nullptr ; current = parent)
   {
-    cout << "backtracing:" << endl;
+    if (DBG) { cout << "backtracing:" << endl; }
     parent = current->parent.lock();
     if (current->is_left_child())
     {
-      cout << "Left subtree height has been reduced." << endl;
+      if (DBG) { cout << "Left subtree height has been reduced." << endl; }
       if (parent->balance_factor == RIGHT_HEAVY)
       {
         if (current->balance_factor == RIGHT_HEAVY)
         {
           // left rotate
-          cout << "Found RIGHT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing left rotation." << endl;
+          if (DBG) { cout << "Found RIGHT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing left rotation." << endl; }
           _left_rotate(parent);
           return;
         }
         else
         {
           // right-left rotate
-          cout << "Found LEFT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing right-left rotation." << endl;
+          if (DBG) { cout << "Found LEFT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing right-left rotation." << endl; }
           _right_left_rotate(parent);
           return;
         }
       }
       else
       {
-        cout << "Subtracting LEFT_HEAVY from parent balance factor." << endl;
+        if (DBG) { cout << "Subtracting LEFT_HEAVY from parent balance factor." << endl; }
         parent->balance_factor -= LEFT_HEAVY;
         if (parent->balance_factor == BALANCED)
         {
-          cout << "Tree is now AVL, returning!" << endl;
+          if (DBG) { cout << "Tree is now AVL, returning!" << endl; }
           return;
         }
         else
@@ -463,29 +465,29 @@ void avltree<K, V>::_retrace_deletion(shared_ptr<node> subtree_root, int8_t bala
     }
     else // (current is a right child necessarily, we exited loop if there was no parent, so it can't be root.
     {
-      cout << "Child is right child" << endl;
+      if (DBG) { cout << "Child is right child" << endl; }
       if (parent->balance_factor == LEFT_HEAVY)
       {
         if (current->balance_factor == LEFT_HEAVY)
         {
-          cout << "Found LEFT_HEAVY subsubtree in LEFT_HEAVY subtree, performing right rotation." << endl;
+          if (DBG) { cout << "Found LEFT_HEAVY subsubtree in LEFT_HEAVY subtree, performing right rotation." << endl; }
           _right_rotate(parent);
           return;
         }
         else
         {
-          cout << "Found LEFT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing left-right rotation." << endl;
+          if (DBG) { cout << "Found LEFT_HEAVY subsubtree in RIGHT_HEAVY subtree, performing left-right rotation." << endl; }
           _left_right_rotate(parent);
           return;
         }
       }
       else
       {
-        cout << "Adding RIGHT_HEAVY to parent balance factor." << endl;
+        if (DBG) { cout << "Adding RIGHT_HEAVY to parent balance factor." << endl; }
         parent->balance_factor -= RIGHT_HEAVY;
         if (parent->balance_factor == BALANCED)
         {
-          cout << "Tree is now AVL, returning!" << endl;
+          if (DBG) { cout << "Tree is now AVL, returning!" << endl; }
           return;
         }
         else
@@ -493,22 +495,22 @@ void avltree<K, V>::_retrace_deletion(shared_ptr<node> subtree_root, int8_t bala
       }
     }
   }
-  cout << "Fell through, we made it to root? " << (current == root) << endl;
+  if (DBG) { cout << "Fell through, we made it to root? " << (current == root) << endl; }
 }
 
 template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node>
 avltree<K, V>::_left_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
 {
-  cout << "performing left rotation..." << endl;
+  if (DBG) { cout << "performing left rotation..." << endl; }
   shared_ptr<node> new_subtree_root = old_subtree_root->right_child;
   shared_ptr<node> grandparent = old_subtree_root->parent.lock();
   shared_ptr<node> orphan = new_subtree_root->left_child;
   
-  cout << "  old root = " << old_subtree_root->value << endl;
-  cout << "  new root = " << new_subtree_root->value << endl;
-  // cout << "  grandparent = " << (grandparent ? grandparent->value : "none") << endl;
-  // cout << "  orphan = " << (orphan ? orphan->value : "none") << endl;
+  if (DBG) { cout << "  old root = " << old_subtree_root->value << endl; }
+  if (DBG) { cout << "  new root = " << new_subtree_root->value << endl; }
+  // if (DBG) { cout << "  grandparent = " << (grandparent ? grandparent->value : "none") << endl; }
+  // if (DBG) { cout << "  orphan = " << (orphan ? orphan->value : "none") << endl; }
 
   if (old_subtree_root->is_left_child())
     set_left_child(grandparent, new_subtree_root);
@@ -539,15 +541,15 @@ template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node>
 avltree<K, V>::_right_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
 {
-  cout << "performing right rotation..." << endl;
+  if (DBG) { cout << "performing right rotation..." << endl; }
   shared_ptr<node> new_subtree_root = old_subtree_root->left_child;
   shared_ptr<node> grandparent = old_subtree_root->parent.lock();
   shared_ptr<node> orphan = new_subtree_root->right_child;  // may be nullptr
 
-  cout << "  old root = " << old_subtree_root->value << endl;
-  cout << "  new root = " << new_subtree_root->value << endl;
-  // cout << "  grandparent = " << (grandparent ? grandparent->value : "none") << endl;
-  // cout << "  orphan = " << (orphan ? orphan->value : "none") << endl;
+  if (DBG) { cout << "  old root = " << old_subtree_root->value << endl; }
+  if (DBG) { cout << "  new root = " << new_subtree_root->value << endl; }
+  // if (DBG) { cout << "  grandparent = " << (grandparent ? grandparent->value : "none") << endl; }
+  // if (DBG) { cout << "  orphan = " << (orphan ? orphan->value : "none") << endl; }
 
   if (old_subtree_root->is_left_child())
     set_left_child(grandparent, new_subtree_root);
@@ -578,7 +580,7 @@ template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node> 
 avltree<K, V>::_left_right_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
 {
-  cout << "performing left-right rotation..." << endl;
+  if (DBG) { cout << "performing left-right rotation..." << endl; }
   _left_rotate(old_subtree_root->left_child);
   return _right_rotate(old_subtree_root);
 }
@@ -587,7 +589,7 @@ template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node> 
 avltree<K, V>::_right_left_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
 {
-  cout << "performing right-left rotation..." << endl;
+  if (DBG) { cout << "performing right-left rotation..." << endl; }
   _right_rotate(old_subtree_root->right_child);
   return _left_rotate(old_subtree_root);
 }
