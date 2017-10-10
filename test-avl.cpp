@@ -28,6 +28,11 @@ fn();                                                                           
 cout << " Complete. " << endl;                                                                     \
 cout << "================================================================================" << endl;
 
+void test_meta_functions()
+{
+  tests::test_meta_functions();
+}
+
 void test_empty_tree()
 {
   avltree<int, double> tree;
@@ -124,6 +129,7 @@ void test_left_right_rotation()
 
 int main()
 {
+  TEST_CASE(test_meta_functions);
   TEST_CASE(test_empty_tree);
   TEST_CASE(test_single_node);
   TEST_CASE(test_multiple_right_insertions);
