@@ -18,12 +18,16 @@ using std::max;
 using std::cout;
 using std::endl;
 
+// A class template to test some of the internals of the AVL tree implementation.
+// Is declared friend of avltree so has access to these.
 template<typename K, typename V>
 class test_helper
 {
 private:  
   test_helper() {} // instantiation not needed (or allowed)
 public:
+
+  // Count the total number of nodes in the tree.
   static unsigned int count_nodes(const avltree<K, V>& tree)
   {
     if (tree.root)
@@ -32,16 +36,19 @@ public:
       return 0u;
   }
 
+  // Check the tree is AVL.
   static bool is_avl(const avltree<K, V>& tree)
   {
     return is_avl(tree.root);
   }
 
+  // Check the tree's balance factors are correct.
   static bool valid_balance_factors(const avltree<K, V>& tree)
   {
     return valid_balance_factors(tree.root);
   }
 
+  // Test the functions in this class.
   static void test_meta_functions()
   {
     {
