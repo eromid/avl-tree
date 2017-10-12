@@ -28,14 +28,11 @@ fn();                                                                           
 cout << " Complete. " << endl;                                                                     \
 cout << "================================================================================" << endl;
 
-
-// Run the tests inside the test-helper class template
 void test_meta_functions()
 {
   tests::test_meta_functions();
 }
 
-// Test empty tree behaves correctly
 void test_empty_tree()
 {
   avltree<int, double> tree;
@@ -47,7 +44,6 @@ void test_empty_tree()
   assert(tests::valid_balance_factors(tree)); // Are all balance factors correct (none)
 }
 
-// Test tree with only one node behaves correctly
 void test_single_node()
 {
   const double value = 42.0;
@@ -74,7 +70,6 @@ void test_single_node()
 
 }
 
-// Test repeated right insertions don't imbalance the tree
 void test_multiple_right_insertions()
 {
   avltree<int, double> tree;
@@ -93,7 +88,6 @@ void test_multiple_right_insertions()
   }
 }
 
-// Test repeated left insertions don't imbalance the tree
 void test_multiple_left_insertions()
 {
   avltree<int, double> tree;
@@ -112,7 +106,6 @@ void test_multiple_left_insertions()
   }
 }
 
-// Test that a right-left rotation correctly balances the tree
 void test_right_left_rotation()
 {
   avltree<int, double> tree;
@@ -124,7 +117,6 @@ void test_right_left_rotation()
 
 }
 
-// Test that a left-right rotation correctly balances the tree
 void test_left_right_rotation()
 {
   avltree<int, double> tree;
@@ -135,7 +127,6 @@ void test_left_right_rotation()
   assert(tests::valid_balance_factors(tree));
 }
 
-// Call all the above cases
 int main()
 {
   TEST_CASE(test_meta_functions);

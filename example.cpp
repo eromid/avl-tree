@@ -3,7 +3,6 @@ example.cpp
 Copyright (c) Eromid (Olly) 2017
 
 A template for an AVL tree - a self balancing binary search tree.
-Example of usage.
 
 */
 
@@ -15,7 +14,6 @@ using std::cout;
 using std::endl;
 using std::string;
 
-// Retrieve and print a node which might exist in the tree.
 void findAndPrint(avltree<int, string> tree, int key)
 {
   const optional<string> &result = tree.search(key);
@@ -25,7 +23,6 @@ void findAndPrint(avltree<int, string> tree, int key)
     cout << key << " --> NULL" << endl;
 }
 
-// Print all the nodes we might be adding
 void printTreeNodes(avltree<int, string> tree)
 {
   findAndPrint(tree, 1);
@@ -39,7 +36,6 @@ void printTreeNodes(avltree<int, string> tree)
 
 int main(/*int argc, char const *argv[]*/)
 {
-  // Adding nodes.
   avltree<int, string> tree;
   tree.insert(2, "Bee");
   printTreeNodes(tree);
@@ -57,7 +53,7 @@ int main(/*int argc, char const *argv[]*/)
   printTreeNodes(tree);
   cout << "Initialised tree with 9 nodes." << endl;
 
-  // Removing nodes.
+
   tree.remove(2);
   cout << "removed 2" << endl;
   printTreeNodes(tree);

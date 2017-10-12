@@ -22,14 +22,12 @@ using std::shared_ptr;
 using std::make_shared;
 using std::weak_ptr;
 
-// Set DBG true to enable detailed output.
-#define DBG false
 #include <iostream>
 using std::cout;
 using std::endl;
 
-// Forward declaration of test_helper class template so we can declare its friendship.
-// The test_helper class contains some meta functionality to check the implementation is valid.
+#define DBG false
+
 template<typename K, typename V>
 class test_helper;
 
@@ -140,17 +138,14 @@ protected:
   // a pointer to the new root of the subtree.
   shared_ptr<node> _right_left_rotate(shared_ptr<node> old_subtree_root);
 
-  // The test_helper class contains some meta functionality to check the implementation is valid.
+
   friend class test_helper<K, V>;
 };
 
-
-
 // ============================================================================================ //
-// |                              `avltree` method definitions                                | //
+// ------------------------------------ Method Definitions ------------------------------------ //
 // ============================================================================================ //
 
-// Insert a node with a given key.
 template <typename K, typename V>
 void avltree<K,V>::insert(const K& key, const V& value)
 {
@@ -171,7 +166,6 @@ void avltree<K,V>::insert(const K& key, const V& value)
   }
 }
 
-// Get (maybe) a node with a given key.
 template <typename K, typename V>
 optional<V> avltree<K, V>::get(const K& key) const
 {
@@ -181,7 +175,6 @@ optional<V> avltree<K, V>::get(const K& key) const
   return optional<V>();
 }
 
-// Remove a node with given key from the tree
 template <typename K, typename V>
 void avltree<K, V>::remove(const K& key)
 {
@@ -274,8 +267,6 @@ void avltree<K, V>::remove(const K& key)
   }
 }
 
-// Find a node with given key; returning null if there are no nodes, a pointer to the would-be
-// parent if the node doesn't exist, or a pointer to the node itself if it does.
 template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node> avltree<K, V>::_node_search(K key) const
 {
@@ -301,7 +292,6 @@ shared_ptr<typename avltree<K, V>::node> avltree<K, V>::_node_search(K key) cons
   }
 }
 
-// Retrace after a node is inserted in order to check tree is still AVL and, if not, rebalance it.
 template <typename K, typename V>
 void avltree<K, V>::_retrace_insertion(shared_ptr<node> inserted_node)
 {
@@ -386,7 +376,6 @@ void avltree<K, V>::_retrace_insertion(shared_ptr<node> inserted_node)
   if (DBG) { cout << "Fell through, we made it to root? " << (current == root) << endl; }
 }
 
-// Retrace after a node is deleted in order to check tree is still AVL and, if not, rebalance it.
 template <typename K, typename V>
 void avltree<K, V>::_retrace_deletion(shared_ptr<node> subtree_root, int8_t balance_factor_change)
 {
@@ -509,7 +498,6 @@ void avltree<K, V>::_retrace_deletion(shared_ptr<node> subtree_root, int8_t bala
   if (DBG) { cout << "Fell through, we made it to root? " << (current == root) << endl; }
 }
 
-// Perform left rotation around given node.
 template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node>
 avltree<K, V>::_left_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
@@ -521,6 +509,8 @@ avltree<K, V>::_left_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
   
   if (DBG) { cout << "  old root = " << old_subtree_root->value << endl; }
   if (DBG) { cout << "  new root = " << new_subtree_root->value << endl; }
+  // if (DBG) { cout << "  grandparent = " << (grandparent ? grandparent->value : "none") << endl; }
+  // if (DBG) { cout << "  orphan = " << (orphan ? orphan->value : "none") << endl; }
 
   if (old_subtree_root->is_left_child())
     set_left_child(grandparent, new_subtree_root);
@@ -547,7 +537,6 @@ avltree<K, V>::_left_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
   return new_subtree_root;
 }
 
-// Perform right rotation around given node.
 template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node>
 avltree<K, V>::_right_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
@@ -559,6 +548,8 @@ avltree<K, V>::_right_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
 
   if (DBG) { cout << "  old root = " << old_subtree_root->value << endl; }
   if (DBG) { cout << "  new root = " << new_subtree_root->value << endl; }
+  // if (DBG) { cout << "  grandparent = " << (grandparent ? grandparent->value : "none") << endl; }
+  // if (DBG) { cout << "  orphan = " << (orphan ? orphan->value : "none") << endl; }
 
   if (old_subtree_root->is_left_child())
     set_left_child(grandparent, new_subtree_root);
@@ -585,7 +576,6 @@ avltree<K, V>::_right_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
   return new_subtree_root;
 }
 
-// Perform left-right rotation around a given node.
 template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node> 
 avltree<K, V>::_left_right_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
@@ -595,7 +585,6 @@ avltree<K, V>::_left_right_rotate(shared_ptr<avltree<K, V>::node> old_subtree_ro
   return _right_rotate(old_subtree_root);
 }
 
-// Perform right-left rotation around a given node.
 template <typename K, typename V>
 shared_ptr<typename avltree<K, V>::node> 
 avltree<K, V>::_right_left_rotate(shared_ptr<avltree<K, V>::node> old_subtree_root)
@@ -605,13 +594,9 @@ avltree<K, V>::_right_left_rotate(shared_ptr<avltree<K, V>::node> old_subtree_ro
   return _left_rotate(old_subtree_root);
 }
 
-
-
-// ============================================================================================ //
-// |                        `avltree::node` method definitions                                | //
-// ============================================================================================ //
-
-// returns true if the node is the left child of its parent.
+// ============================================================================================= //
+// ------------------------------------ 'node' Method Definitions ------------------------------ //
+// ============================================================================================= //
 template <typename K, typename V>
 bool avltree<K, V>::node::is_left_child() const
 {
